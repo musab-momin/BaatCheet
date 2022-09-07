@@ -1,13 +1,17 @@
 import React from "react";
+import { Route, Routes } from "react-router";
 import 'rsuite/dist/styles/rsuite-default.css'; 
 import './styles/main.scss';
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
 
 
 function App() {
   return (
-    <div className="App">
-      Chalo shuru kare BaatCheet
-    </div>
+    <Routes>
+      <Route exact path="/signin" element={<PublicRoute />} />
+      <Route exact path="/" element={ <PrivateRoute /> } />
+    </Routes>
   );
 }
 

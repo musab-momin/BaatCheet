@@ -12,3 +12,7 @@ function App() {
 }
 
 export default App;
+
+
+
+// https://baatcheet-3c34f.firebaseapp.com/__/auth/handler

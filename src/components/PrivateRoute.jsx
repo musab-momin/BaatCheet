@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import Home from '../pages/Home';
 
-const PrivateRoute = () => {
+const PrivateRoute = ({ children }) => {
   const isLoggedin = false;
   const navigate = useNavigate();
   
@@ -13,7 +12,9 @@ const PrivateRoute = () => {
   }, [isLoggedin,navigate])
 
   return(
-    <Home />
+    <>
+        { children }
+    </>
   )
 }
 export default PrivateRoute;

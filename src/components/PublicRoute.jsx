@@ -1,9 +1,12 @@
-import React from 'react';
-import Signin from '../pages/Signin';
+import React from "react";
 
+const PublicRoute = ({ children }) => {
 
-const PublicRoute = () => {
-  return <Signin />;
+  return(
+    <>
+      { children }
+    </>
+  );
 };
 
 export default PublicRoute;

@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'; // Import the functions you need from the SDKs you need
-
+import 'firebase/auth'
+import 'firebase/database';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -7,6 +8,8 @@ const firebaseConfig = {
     apiKey: "AIzaSyDnPWzuGhhbokQqV1s9BjhSQiZclRfNUc0",
   
     authDomain: "baatcheet-3c34f.firebaseapp.com",
+
+    databaseURL: "https://baatcheet-3c34f-default-rtdb.asia-southeast1.firebasedatabase.app/",
   
     projectId: "baatcheet-3c34f",
   
@@ -20,3 +23,7 @@ const firebaseConfig = {
   
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+
+export const auth = app.auth();     // authentication function
+
+export const database = app.database();     // database function

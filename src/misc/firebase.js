@@ -8,6 +8,8 @@ const firebaseConfig = {
     apiKey: "AIzaSyDnPWzuGhhbokQqV1s9BjhSQiZclRfNUc0",
   
     authDomain: "baatcheet-3c34f.firebaseapp.com",
+
+    databaseURL: "https://baatcheet-3c34f-default-rtdb.asia-southeast1.firebasedatabase.app/",
   
     projectId: "baatcheet-3c34f",
   

@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router';
+import { Container, Loader } from 'rsuite';
 import { useProfile } from '../context/Profile.context';
 
 const PrivateRoute = ({ children }) => {
-  const isLoggedin = useProfile();
+  const {profile, isLoading} = useProfile();
   const navigate = useNavigate();
   
+  if(isLoading && !profile){
+    return <Container>
+      <Loader center vertical size='md' content='Loading...' speed='slow'  />
+    </Container>
+  }
   
-  useEffect(()=>{
-    if(!isLoggedin)
-        navigate('/signin')
-  }, [isLoggedin,navigate])
+  if(!profile && !isLoading){
+    return  navigate('/signin')
+  }
 
   return(
     <>

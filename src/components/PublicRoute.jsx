@@ -1,17 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { Container, Loader } from 'rsuite';
 import { useNavigate } from "react-router";
 import { useProfile } from "../context/Profile.context";
 
 const PublicRoute = ({ children }) => {
 
-  const isLoggedIn = useProfile();
+  const { profile, isLoading } = useProfile();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if(isLoggedIn){
-      navigate('/')
-    }
-  }, [isLoggedIn, navigate])
+  if(isLoading && !profile){
+    return <Container>
+    <Loader center vertical size='md' content='Loading...' speed='slow'  />
+  </Container>
+  }
+
+  if(profile && !isLoading){
+    return navigate('/')
+  }
 
   return(
     <>

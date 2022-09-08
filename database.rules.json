@@ -2,8 +2,8 @@
   "rules": {
     "profiles":{
       "$user_id":{
-        ".read": true,
-        ".write": true
+        ".read": "$user_id === auth.uid",
+        ".write": "$user_id === auth.uid"
       }
     },
     ".read": false,

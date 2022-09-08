@@ -8,16 +8,17 @@ const Signin = () => {
     const signInWithProvider = async (provider)=>{
         try{
             const { additionalUserInfo, user } = await auth.signInWithPopup(provider);
+
+        
             if(additionalUserInfo.isNewUser){    
                 // profile/user.id is the place where we store the user info
                 await database.ref(`/profiles/${user.uid}`).set({
                     name: user.displayName,
                     email: user.email,
                     createdAt: firebase.database.ServerValue.TIMESTAMP
-                });
+                })
             }
-            Alert.success('Signin successfully', 30000)
-            
+            Alert.success('Signin successfully', 30000)    
 
         }catch(err){
             Alert.info(err.message, 30000)

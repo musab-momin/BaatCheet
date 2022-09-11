@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 
 export function useDrawer(defaultValue = false){
     const [isOpen, setIsOpen] = useState(defaultValue)
 
-    const open = () => setIsOpen(true);
-    const close = () => setIsOpen(false);
+    const open =  useCallback(() => setIsOpen(true), []);
+    const close = useCallback(() => setIsOpen(false), []);
 
     return {isOpen, open, close}
 
@@ -23,7 +23,7 @@ export function useMediaQuery(query){
         const listener = eve => setMatches(eve.matches);
         queryList.addListener(listener)
 
-        return () => queryList.removeEventListener(listener);
+        return () => queryList.removeListener(listener);
     }, [query])
 
     return matches;

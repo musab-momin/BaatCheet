@@ -1,11 +1,10 @@
 import React from 'react';
-import { useNavigate } from 'react-router';
+import { Navigate } from 'react-router';
 import { Container, Loader } from 'rsuite';
 import { useProfile } from '../context/Profile.context';
 
 const PrivateRoute = ({ children }) => {
   const {profile, isLoading} = useProfile();
-  const navigate = useNavigate();
   
   if(isLoading && !profile){
     return <Container>
@@ -14,7 +13,7 @@ const PrivateRoute = ({ children }) => {
   }
   
   if(!profile && !isLoading){
-    return  navigate('/signin')
+    return  <Navigate replace to='/signin' />
   }
 
   return(

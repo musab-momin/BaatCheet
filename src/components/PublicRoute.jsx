@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Loader } from 'rsuite';
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { useProfile } from "../context/Profile.context";
 
 const PublicRoute = ({ children }) => {
@@ -15,7 +15,7 @@ const PublicRoute = ({ children }) => {
   }
 
   if(profile && !isLoading){
-    return navigate('/')
+    return <Navigate replace to="/" />
   }
 
   return(

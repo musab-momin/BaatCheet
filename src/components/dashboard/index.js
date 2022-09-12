@@ -4,6 +4,7 @@ import { useProfile } from '../../context/Profile.context'
 import { database } from '../../misc/firebase';
 import EditableInput from '../EditableInput';
 import ProviderBlock from './ProviderBlock';
+import UploadAvatar from './UploadAvatar';
 
 
 // we named this component file as index.js bcoz while importing this file we just have to mention the folder name  import ./dashboar;
@@ -39,6 +40,7 @@ const Dashboard = ({ onSignout }) => {
         onSave = { onSave }
         label = { <h6 className='mb-2'>Username</h6> }
         />
+        <UploadAvatar />
       </Drawer.Body>
       <Drawer.Footer>
         <Button block color='red' onClick={onSignout}>

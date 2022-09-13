@@ -1,6 +1,8 @@
 import firebase from 'firebase/app'; // Import the functions you need from the SDKs you need
 import 'firebase/auth'
 import 'firebase/database';
+import 'firebase/storage';
+
 
 // Firebase configuration
 const firebaseConfig = {
@@ -27,3 +29,6 @@ const app = firebase.initializeApp(firebaseConfig);
 export const auth = app.auth();     // authentication function
 
 export const database = app.database();     // database function
+
+export const storage = app.storage();   // firebase storage this we are going use it to store images, 
+

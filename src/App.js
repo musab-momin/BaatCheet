@@ -30,6 +30,14 @@ function App() {
             </PrivateRoute>
           }
         />
+         <Route
+          path="/chat/:chatId"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </ProfileProvider>
   );

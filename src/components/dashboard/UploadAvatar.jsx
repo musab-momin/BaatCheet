@@ -5,6 +5,7 @@ import { useDrawer } from '../../misc/custom-hooks';
 import { database, storage } from '../../misc/firebase';
 import { useProfile } from '../../context/Profile.context';
 import ProfileAvatar from './ProfileAvatar';
+import { getUserUpdates } from '../../misc/helper';
 
 const inputFileTypes = '.png, .jpeg, .jpg, .webp';
 
@@ -71,10 +72,14 @@ const UploadAvatar = () => {
       // we are getting the download url of uploaded image
       const avatarDownloadURL = await uploadAvatarResult.ref.getDownloadURL();
 
-      const userAvatarRef = database
-        .ref(`/profiles/${profile.uid}`)
-        .child('avatar');
-      userAvatarRef.set(avatarDownloadURL);
+      // const userAvatarRef = database
+      //   .ref(`/profiles/${profile.uid}`)
+      //   .child('avatar');
+      // userAvatarRef.set(avatarDownloadURL);
+      
+      
+      const updates = await getUserUpdates(profile.uid, 'avatar', avatarDownloadURL, database);
+      await database.ref().update(updates)
 
       Alert.success('Profile image is uploaded', 3000);
       setIsLoading(false);

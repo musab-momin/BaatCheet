@@ -9,7 +9,7 @@ import IconContolBtn from './IconContolBtn';
 import PresenceIndicator from './PresenceIndicator';
 import ProfileModal from './ProfileModal';
 
-const MessageItem = ({ message, handleAdmin, handleLike }) => {
+const MessageItem = ({ message, handleAdmin, handleLike, handleDelete }) => {
   const { author, createdAt, text, likes, likeCount } = message;
 
   const [selfRef, isHovered] = useHover();
@@ -51,6 +51,15 @@ const MessageItem = ({ message, handleAdmin, handleLike }) => {
             onClick = {() => handleLike(message.id)}
             badgeContent = {likeCount}
             />
+            {
+              isAuthor &&
+              <IconContolBtn 
+              isVisible = {canShowIcon}
+              iconName = 'trash'
+              tooltip = 'delete it'
+              onClick = {() => handleDelete(message.id)}
+              />
+            }
         </div>
         <div>
             <span className='work-break-all'> {text} </span>

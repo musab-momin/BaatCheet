@@ -9,6 +9,12 @@ export const getNameInitials = (username) => {
     return splitName[0][0]
 }   
 
+
+export const transformToArray = snapVal =>{
+    return snapVal ? Object.keys(snapVal) : []
+}
+
+
 // we are gettting the snapshoot values as objects so we are converting the it to array of objects.
 // input: "NKQINGL:SKJG" : { name: 'ChatRoomName', description: 'ChatRoomDescription', createdAt: 234234 } output: [{id: 'NKQINL:SKJG', 'ChatRoomName', description: 'ChatRoomDescription', createdAt: 234234 }]
 export const transformToArrayById = (snapVal) =>{

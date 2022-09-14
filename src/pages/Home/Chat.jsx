@@ -5,7 +5,9 @@ import { useRooms } from "../../context/chatroom.context";
 import ChatTop from '../../components/chat-window/top';
 import Messages from '../../components/chat-window/messages';
 import ChatBottom from '../../components/chat-window/bottom';
+import { transformToArray } from '../../misc/helper';
 import { ActiveRoomProvider } from '../../context/active.room.context';
+import { auth } from '../../misc/firebase';
 
 const Chat = () => {
   const { chatId } = useParams();
@@ -22,9 +24,14 @@ const Chat = () => {
   }
 
   const {name, description} = activeRoom;
+  const admins = transformToArray(activeRoom.admins);     // converting admins={} object to admins = [] array
+  const isAdmin = admins.includes(auth.currentUser.uid)   // checking the current logged in user is a admin of the chatRoom or not
+
   const activeRoomData = {
     name, 
-    description
+    description,
+    admins,
+    isAdmin
   }
 
   return (

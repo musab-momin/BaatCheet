@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import {
-    Alert,
+  Alert,
   Button,
   ControlLabel,
   Form,
@@ -12,7 +12,7 @@ import {
 } from 'rsuite';
 import firebase from 'firebase/app';
 import { useDrawer } from '../../misc/custom-hooks';
-import { database } from '../../misc/firebase';
+import { auth, database } from '../../misc/firebase';
 
 const INITIAL_FRM = {
   name: '',
@@ -34,32 +34,36 @@ const CreateRoomModal = () => {
   const formRef = useRef(null);
 
   const onFormChange = useCallback(value => {
-    setFormValues(value)
+    setFormValues(value);
   }, []);
 
-  const handleSubmit = async () =>{
+  const handleSubmit = async () => {
     // .check() is the function from rsuit it will check form values against our formModelSchema
-    if(!formRef.current.check()){
-        // eslint-disable-next-line no-useless-return
-        return;
+    if (!formRef.current.check()) {
+      // eslint-disable-next-line no-useless-return
+      return;
     }
 
-    setIsLoading(true)
-    const newRoomData = { ...formValues, createdAt: firebase.database.ServerValue.TIMESTAMP }
+    setIsLoading(true);
+    const newRoomData = {
+      ...formValues,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+      admins: {
+        [auth.currentUser.uid] : true,
+      }
+    }; 
 
     try {
-        await database.ref('/rooms').push(newRoomData);
-        Alert.info(`${formValues.name} has been created`, 3000);
-        setIsLoading(false);
-        setFormValues(INITIAL_FRM);
-        close();    // to close modal
-
+      await database.ref('/rooms').push(newRoomData);
+      Alert.info(`${formValues.name} has been created`, 3000);
+      setIsLoading(false);
+      setFormValues(INITIAL_FRM);
+      close(); // to close modal
     } catch (error) {
-        setIsLoading(false)
-        Alert.error(error.message, 3000);
+      setIsLoading(false);
+      Alert.error(error.message, 3000);
     }
-
-  }
+  };
 
   return (
     <div className="mt-2">
@@ -94,7 +98,12 @@ const CreateRoomModal = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button block appearance="primary" onClick={handleSubmit} disabled={isLoading}>
+          <Button
+            block
+            appearance="primary"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
             {' '}
             create it!
           </Button>

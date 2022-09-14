@@ -15,6 +15,7 @@ function assembleMessage(profile, chatId) {
       ...(profile.avatar ? { avatar: profile.avatar } : {}), // if user has profile pic than it wil add avatar: image else it will add nothing
     },
     createdAt: firebase.database.ServerValue.TIMESTAMP,
+    likeCount: 0
   };
 }
 

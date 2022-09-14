@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router';
-import { Alert, Button, Drawer, Icon } from 'rsuite';
+import { Alert, Button, Drawer } from 'rsuite';
 import { useActiveRoom } from '../../../context/active.room.context';
 import { useDrawer, useMediaQuery } from '../../../misc/custom-hooks';
 import { database } from '../../../misc/firebase';

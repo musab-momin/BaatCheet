@@ -26,6 +26,7 @@ const Messages = () => {
 
   }, [chatId])
 
+  // this function is for adding and revoking admin permission to perticular user
   const handleAdmin = useCallback(async (uid)=>{
     const adminRef = database.ref(`/rooms/${chatId}/admins`);
     let alertMssg;

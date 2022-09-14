@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { database } from "./firebase";
 
 
 export function useDrawer(defaultValue = false){
@@ -28,3 +29,20 @@ export function useMediaQuery(query){
 
     return matches;
 }
+
+export function usePresence(userId){
+    const [presence, setPresence] = useState(null);
+    useEffect(()=>{
+        const userStatusRef = database.ref(`/status/${userId}`)
+        userStatusRef.on('value', snap => {
+            if(snap.exists()){
+                const data = snap.val();
+                setPresence(data);
+            }
+        })
+
+        return () => userStatusRef.off()
+    }, [userId]) 
+    return presence;
+}
+

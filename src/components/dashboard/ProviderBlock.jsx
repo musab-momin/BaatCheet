@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import firebase from 'firebase/app';
 import { Icon, Tag, Button, Alert } from 'rsuite';
-import { auth, database } from '../../misc/firebase';
+import { auth } from '../../misc/firebase';
 
 
 const ProviderBlock = () => {
 
     // we are checking the user is loggedin by google or facebook
     const [isConnected, setIsConnected] = useState({
-        'google.com': auth.currentUser.providerData.some(data => data.providerId === 'google.com'),
-        'facebook.com': auth.currentUser.providerData.some(data => data.providerId === 'facebook.com')
+        'google.com': auth.currentUser ? auth?.currentUser.providerData.some(data => data.providerId === 'google.com') : false,
+        'facebook.com': auth.currentUser ? auth.currentUser.providerData.some(data => data.providerId === 'facebook.com') : false
     });
 
     const updateIsConnected = (providerId, value) => {
@@ -28,7 +28,7 @@ const ProviderBlock = () => {
             // if user is connect by both provider google and facebook.
             await auth.currentUser.unlink(providerId)
             updateIsConnected(providerId, false)            
-            Alert.success(`Disconnected from ${providerId}`)
+            Alert.info(`Disconnected from ${providerId}`)
 
         } catch (error) {
             Alert.error(error.message, 3000);
@@ -46,7 +46,7 @@ const ProviderBlock = () => {
         try {
             await auth.currentUser.linkWithPopup(providerObj)
             updateIsConnected(providerObj.providerId, true)  
-            Alert.success(`Linked with ${providerObj.providerId}`);
+            Alert.info(`Linked with ${providerObj.providerId}`);
         } catch (err) {
             Alert.error(err.message, 3000);
         }

@@ -23,7 +23,7 @@ const Dashboard = ({ onSignout }) => {
       const updates = await getUserUpdates(profile.uid, 'name', newData, database);
       await database.ref().update(updates)
 
-      Alert.success('Username has been updated', 3000);
+      Alert.info('Username has been updated', 3000);
     }catch(err){
       Alert.error(err.message, 3000);
     }

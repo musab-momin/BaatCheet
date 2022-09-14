@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { memo } from 'react';
+import { Button } from 'rsuite';
 import TimeAgo from 'timeago-react';
+import { useActiveRoom } from '../../../context/active.room.context';
+import { auth } from '../../../misc/firebase';
 import ProfileAvatar from '../../dashboard/ProfileAvatar';
 import PresenceIndicator from './PresenceIndicator';
 import ProfileModal from './ProfileModal';
 
-const MessageItem = ({ message }) => {
+const MessageItem = ({ message, handleAdmin }) => {
   const { author, createdAt, text } = message;
 
+  const isAdmin = useActiveRoom(val => val.isAdmin);
+  const admins = useActiveRoom(val => val.admins);
+
+  const isMssgAuthorIsAdmin = admins.includes( author.uid );
+  const isAuthor = auth.currentUser.uid === author.uid;
+  const canGrantAdminPermission = isAdmin && !isAuthor;
 
 
   return(
@@ -14,7 +23,14 @@ const MessageItem = ({ message }) => {
         <div className='d-flex align-items-center font-bolder mb-1'>
           <PresenceIndicator  userId = {author.uid} />
             <ProfileAvatar src={ author.avatar } name={author.name} className='ml-1' size='xs' />
-            <ProfileModal author={author} />
+            <ProfileModal author={author}>
+              {
+                canGrantAdminPermission &&
+                <Button block color='blue' onClick={()=>{ handleAdmin(author.uid) }}>
+                  { isMssgAuthorIsAdmin ? 'Remove admin' : 'Make admin' }
+                </Button>
+              }
+            </ProfileModal>
             <TimeAgo 
             datetime={createdAt}
             className="font-normal text-black-45 ml-2"
@@ -28,4 +44,4 @@ const MessageItem = ({ message }) => {
   );
 };
 
-export default MessageItem;
+export default memo(MessageItem);

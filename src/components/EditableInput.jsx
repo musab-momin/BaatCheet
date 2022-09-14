@@ -7,7 +7,7 @@ const EditableInput = ({
   onSave,
   label = null,
   placeholder = 'Write something...',
-  emptyMssg = 'Input is empty',
+  // emptyMssg = 'Input is empty',
   ...inptProps
 }) => {
 

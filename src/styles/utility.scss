@@ -257,3 +257,12 @@ $indent_3: 15px;
 .pl-2{
   padding-left: $indent_3;
 }
+
+.hide-scrollbar{
+  scrollbar-width: none !important;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}

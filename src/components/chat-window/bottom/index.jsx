@@ -4,6 +4,8 @@ import { InputGroup, Input, Icon, Alert } from 'rsuite';
 import firebase from 'firebase/app';
 import { useProfile } from '../../../context/Profile.context';
 import { database } from '../../../misc/firebase';
+import FileMessageModal from './FileMessageModal';
+import AudioMessageModal from './AudioMessageModal';
 
 function assembleMessage(profile, chatId) {
   return {
@@ -68,9 +70,41 @@ const ChatBottom = () => {
     }
   }
 
+  const afterUpload = useCallback(async (files) => {
+    setIsLoading(true);
+
+    const updates = {};
+
+    files.forEach(file => {
+      const mssgData = assembleMessage(profile, chatId);  // creating object for message
+      mssgData.file = file;   // adding file key and value to message object
+
+      const messageId = database.ref('messages').push().key;  // generating unique key for each file or message
+      updates[`/messages/${messageId}`] = mssgData;
+    })
+
+    const lastMssgId = Object.keys(updates).pop();   // getting the last message to show room name;
+
+    updates[`/rooms/${chatId}/lastMessage`] = {
+      ...updates[lastMssgId],
+      msgId: lastMssgId
+    }
+
+    try{
+      await database.ref().update(updates);
+      setIsLoading(false)
+    }catch(err){
+      setIsLoading(false);
+      Alert.error(err.message, 3000);
+    }
+
+  }, [chatId, profile])
+
   return (
     <div>
       <InputGroup>
+        <FileMessageModal afterUpload={afterUpload} />
+        <AudioMessageModal  afterUpload={afterUpload} />
         <Input
           placeholder="type something..."
           value={mssg}

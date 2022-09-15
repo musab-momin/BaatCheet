@@ -1,31 +1,69 @@
 /* eslint-disable consistent-return */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef} from 'react';
 import { useParams } from 'react-router';
-import { Alert } from 'rsuite';
+import { Alert, Button } from 'rsuite';
 import { auth, database, storage } from '../../../misc/firebase';
 import { groupBy, transformToArrayById } from '../../../misc/helper';
 import MessageItem from './MessageItem';
 
+
+const PAGE_LIMIT = 5 
+const messageRef = database.ref('/messages');
+
+const shouldScrollBottom = (node, threshold = 30) =>{
+  const percentage = (100 * node.scrollTop) / (node.scrollHeight - node.clientHeight) || 0
+  return percentage > threshold;
+}
+
 const Messages = () => {
   const { chatId } = useParams();
   const [messages, setMessages] = useState(null);
+  const [limit, setLimit] = useState(PAGE_LIMIT)
+  const refToLastMssg = useRef(null);
 
   const isChatEmpty = messages && messages.length === 0;
   const showMessages = messages && messages.length > 0;
 
-  useEffect(() => {
-    const messageRef = database.ref('/messages');
+  const loadMessages = useCallback((limitToLast)=>{
+    
+    const node = refToLastMssg.current;
+    // unsubscribe from previouse transaction
+    messageRef.off();
 
     messageRef
       .orderByChild('roomId')
       .equalTo(chatId)
+      .limitToLast(limitToLast || PAGE_LIMIT)   // page_limit is for intial page load
       .on('value', snap => {
         const messageData = transformToArrayById(snap.val());
         setMessages(messageData);
+        if(shouldScrollBottom(node)){
+          node.scrollTop = node.scrollHeight;
+        }
       });
 
+    setLimit(prev => prev + PAGE_LIMIT)  // increase fetch limit on every fetch  
+  }, [chatId])
+
+  const onLoadMore = useCallback(()=>{
+    loadMessages(limit)
+  }, [limit, loadMessages])
+
+  useEffect(() => {
+    const node = refToLastMssg.current;
+    loadMessages();
+    
+    // scrolling down the the last message
+    setTimeout(()=>{
+      // we wrote belowe line in setTimeout bcoz we want below line to run after loadMessage function and loadMessage is a async function 
+      // so there is change that below line will run before loadMessage to prevent it we wrap below line inside setTimeout and setTimeout
+      // always run after all async call backs are finished
+      node.scrollTop = node.scrollHeight
+    }, 100)
+    
     return () => messageRef.off('value');
-  }, [chatId]);
+  }, [loadMessages]);
+
 
   // this function is for adding and revoking admin permission to perticular user
   const handleAdmin = useCallback(
@@ -51,8 +89,8 @@ const Messages = () => {
 
   const handleLike = useCallback(async mssgId => {
     const { uid } = auth.currentUser;
-    const messageRef = database.ref(`/messages/${mssgId}`);
-    await messageRef.transaction(mssg => {
+    const messagesRef = database.ref(`/messages/${mssgId}`);
+    await messagesRef.transaction(mssg => {
       if (mssg) {
         if (mssg.likes && mssg.likes[uid]) {
           mssg.likeCount -= 1;
@@ -140,7 +178,12 @@ const Messages = () => {
   };
 
   return (
-    <ul className="msg-list custom-scroll">
+    <ul className="msg-list custom-scroll" ref={refToLastMssg}>
+      {messages && messages.length >= PAGE_LIMIT && (
+        <li className='text-center mt-2 mb-2'>
+          <Button onClick={onLoadMore} color="green" appearance='link'>Load more</Button>
+        </li>
+      )}
       {isChatEmpty && <li> No messages yet! </li>}
       {showMessages && renderMessages()}
     </ul>

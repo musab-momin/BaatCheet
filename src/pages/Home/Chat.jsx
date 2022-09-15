@@ -39,7 +39,7 @@ const Chat = () => {
       <div className="chat-top">
         <ChatTop />
       </div>
-      <div className="chat-middle">
+      <div className="chat-middle hide-scrollbar">
         <Messages />
       </div>
       <div className="chat-bottom">

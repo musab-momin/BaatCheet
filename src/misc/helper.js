@@ -49,3 +49,19 @@ export async function getUserUpdates(userId, keyToUpdate, value, db){
 
     return updates;
 }
+
+// grouping message by date
+export function groupBy(messages, groupingKeyCb){
+    return messages.reduce((result, currentItem)=>{
+        const groupingkey = groupingKeyCb(currentItem);
+        // if key does not exist
+        if(!result[groupingkey]){
+            result[groupingkey] = []
+        }
+
+        result[groupingkey].push(currentItem)
+
+        return result;
+    }, {})    
+}
+

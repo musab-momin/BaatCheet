@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { Alert } from 'rsuite';
 import { auth, database, storage } from '../../../misc/firebase';
-import { transformToArrayById } from '../../../misc/helper';
+import { groupBy, transformToArrayById } from '../../../misc/helper';
 import MessageItem from './MessageItem';
 
 const Messages = () => {
@@ -69,65 +69,80 @@ const Messages = () => {
     });
   }, []);
 
-  const handleDelete = useCallback(async (mssgId, file) => {
-    // check the user want to delete this by confirm window
-    // eslint-disable-next-line no-alert
-    if(!window.confirm("Do you want to delete this message")){
-      // eslint-disable-next-line no-useless-return
-      return;
-    }
-
-    // checking the deleting msssg is last or not bcoz we show last mssg with chat room
-    const isLast = messages[messages.length - 1].id === mssgId; 
-
-    const updates = {}
-
-    // deleting mssg from message table
-    updates[`/messages/${mssgId}`] = null;
-
-    // if our message is the last mssg so we have to delete it and set the previouse mssg to last message inside rooms table
-    if(isLast && messages.length > 1){
-      updates[`/rooms/${ chatId }/lastMessage`] = {
-        ...messages[messages.length - 2],
-        msgId: messages[messages.length - 2].id
+  const handleDelete = useCallback(
+    async (mssgId, file) => {
+      // check the user want to delete this by confirm window
+      // eslint-disable-next-line no-alert
+      if (!window.confirm('Do you want to delete this message')) {
+        // eslint-disable-next-line no-useless-return
+        return;
       }
-    }
 
-    if(isLast && messages.length === 1){
-      updates[`/rooms/${ chatId }/lastMessage`] = null
-    }
+      // checking the deleting msssg is last or not bcoz we show last mssg with chat room
+      const isLast = messages[messages.length - 1].id === mssgId;
 
-    try {
-      await database.ref().update(updates)
-      Alert.info('Message has been deleted', 3000)
-    } catch (err) {
-      return Alert.error(err.message, 3000) 
-    }
+      const updates = {};
 
-    if(file){
+      // deleting mssg from message table
+      updates[`/messages/${mssgId}`] = null;
+
+      // if our message is the last mssg so we have to delete it and set the previouse mssg to last message inside rooms table
+      if (isLast && messages.length > 1) {
+        updates[`/rooms/${chatId}/lastMessage`] = {
+          ...messages[messages.length - 2],
+          msgId: messages[messages.length - 2].id,
+        };
+      }
+
+      if (isLast && messages.length === 1) {
+        updates[`/rooms/${chatId}/lastMessage`] = null;
+      }
+
       try {
-        const fileRef = storage.refFromURL(file.url);
-        await fileRef.delete();
+        await database.ref().update(updates);
+        Alert.info('Message has been deleted', 3000);
       } catch (err) {
-        Alert.error(err.message, 3000);
+        return Alert.error(err.message, 3000);
       }
-    }
 
-  }, [messages, chatId]);
+      if (file) {
+        try {
+          const fileRef = storage.refFromURL(file.url);
+          await fileRef.delete();
+        } catch (err) {
+          Alert.error(err.message, 3000);
+        }
+      }
+    },
+    [messages, chatId]
+  );
+
+  const renderMessages = () => {
+    const groups = groupBy(messages, item =>
+      new Date(item.createdAt).toDateString()
+    );
+
+    const items = [];
+    Object.keys(groups).forEach(date => {
+      items.push(<li className="text-center mb-1 padded">{date}</li>);
+      const mssges = groups[date].map(mssg => (
+        <MessageItem
+          key={mssg.id}
+          message={mssg}
+          handleAdmin={handleAdmin}
+          handleLike={handleLike}
+          handleDelete={handleDelete}
+        />
+      ));
+      items.push([...mssges]);
+    });
+    return items;
+  };
 
   return (
     <ul className="msg-list custom-scroll">
       {isChatEmpty && <li> No messages yet! </li>}
-      {showMessages &&
-        messages.map(mssg => (
-          <MessageItem
-            key={mssg.id}
-            message={mssg}
-            handleAdmin={handleAdmin}
-            handleLike={handleLike}
-            handleDelete={handleDelete}
-          />
-        ))}
+      {showMessages && renderMessages()}
     </ul>
   );
 };
